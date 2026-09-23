@@ -100,7 +100,8 @@ function renderSuggestCount() {
     .then((count) => {
       el.textContent = `これまで ${count} 回、レシピを提案しました`;
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error("global counter failed", err);
       const local = bumpLocalSuggestCount();
       el.textContent = local
         ? `これまで ${local} 回、レシピを提案しました（集計サービスに接続できないため、このブラウザだけの回数です）`
