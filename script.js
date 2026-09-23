@@ -67,6 +67,27 @@ function renderResults(dishes, note) {
   });
 }
 
+const SUGGEST_COUNT_KEY = "kondateNaviSuggestCount";
+
+function incrementSuggestCount() {
+  let count = 0;
+  try {
+    count = Number(localStorage.getItem(SUGGEST_COUNT_KEY)) || 0;
+    count += 1;
+    localStorage.setItem(SUGGEST_COUNT_KEY, String(count));
+  } catch (e) {
+    count = (incrementSuggestCount.fallback = (incrementSuggestCount.fallback || 0) + 1);
+  }
+  return count;
+}
+
+function renderSuggestCount() {
+  const el = document.getElementById("suggest-count");
+  if (!el) return;
+  const count = incrementSuggestCount();
+  el.textContent = `これまで ${count} 回、レシピを提案しました（このブラウザでの記録です）`;
+}
+
 function suggest() {
   const ingredients = getChecked("ingredient");
   const methods = getChecked("method");
@@ -86,6 +107,7 @@ function suggest() {
 
   const chosen = pickRandom(candidates, Math.min(3, candidates.length));
   renderResults(chosen, chosen.length < 2 ? "条件に合うレシピが少なかったので、これだけ表示しています。" : null);
+  renderSuggestCount();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
