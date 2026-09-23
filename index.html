@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>こんだてナビ - 条件からレシピ提案</title>
+<meta name="description" content="食材・調理手段・完成形のチェックボックスから、今の状況に合うレシピを2〜3件提案するサイト。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>こんだてナビ</h1>
+  <p class="lead">食材・手段・完成形をチェックするだけ。今の冷蔵庫事情に合うレシピを提案します。</p>
+</header>
+
+<main>
+  <section class="filter-section">
+    <fieldset class="filter-group">
+      <legend>1. 食材</legend>
+      <div class="check-list" id="ingredient-group"></div>
+    </fieldset>
+
+    <fieldset class="filter-group">
+      <legend>2. 調理手段</legend>
+      <div class="check-list" id="method-group"></div>
+    </fieldset>
+
+    <fieldset class="filter-group">
+      <legend>3. 完成形</legend>
+      <div class="check-list" id="style-group"></div>
+    </fieldset>
+
+    <div class="action-row">
+      <button id="suggest-btn" class="primary-btn">レシピを提案する</button>
+      <button id="shuffle-btn" class="secondary-btn">別の提案を見る</button>
+    </div>
+    <p class="hint">チェックを付けなかった項目は「どれでも可」として扱います。</p>
+  </section>
+
+  <section class="results-section">
+    <h2>提案レシピ</h2>
+    <div id="results"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>レシピ名は当サイトが提案する献立のヒントです。実際の作り方はリンク先のレシピサイトでご確認ください。</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
