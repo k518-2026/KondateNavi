@@ -67,25 +67,45 @@ function renderResults(dishes, note) {
   });
 }
 
-const SUGGEST_COUNT_KEY = "kondateNaviSuggestCount";
+// 通算回数は外部の無料カウンターAPI（キー不要）に記録する。
+// このサイトにサーバーが無いため、全員分を合算した本当の通算値を
+// 安全に書き込める場所が他に無い（GitHub直書きは書き込みトークンの
+// 公開が必要になり危険なので避けた）。サービスが落ちている場合は
+// このブラウザだけの回数にフォールバックする。
+const COUNTER_NAMESPACE = "kondate-navi-k518-2026";
+const COUNTER_KEY = "suggest";
+const LOCAL_COUNT_FALLBACK_KEY = "kondateNaviSuggestCountLocal";
 
-function incrementSuggestCount() {
-  let count = 0;
+async function fetchGlobalSuggestCount() {
+  const res = await fetch(`https://abacus.jasoncameron.dev/hit/${COUNTER_NAMESPACE}/${COUNTER_KEY}`);
+  if (!res.ok) throw new Error("counter api error");
+  const data = await res.json();
+  return data.value;
+}
+
+function bumpLocalSuggestCount() {
   try {
-    count = Number(localStorage.getItem(SUGGEST_COUNT_KEY)) || 0;
-    count += 1;
-    localStorage.setItem(SUGGEST_COUNT_KEY, String(count));
+    const count = (Number(localStorage.getItem(LOCAL_COUNT_FALLBACK_KEY)) || 0) + 1;
+    localStorage.setItem(LOCAL_COUNT_FALLBACK_KEY, String(count));
+    return count;
   } catch (e) {
-    count = (incrementSuggestCount.fallback = (incrementSuggestCount.fallback || 0) + 1);
+    return null;
   }
-  return count;
 }
 
 function renderSuggestCount() {
   const el = document.getElementById("suggest-count");
   if (!el) return;
-  const count = incrementSuggestCount();
-  el.textContent = `これまで ${count} 回、レシピを提案しました（このブラウザでの記録です）`;
+  fetchGlobalSuggestCount()
+    .then((count) => {
+      el.textContent = `これまで ${count} 回、レシピを提案しました`;
+    })
+    .catch(() => {
+      const local = bumpLocalSuggestCount();
+      el.textContent = local
+        ? `これまで ${local} 回、レシピを提案しました（集計サービスに接続できないため、このブラウザだけの回数です）`
+        : "";
+    });
 }
 
 function suggest() {
